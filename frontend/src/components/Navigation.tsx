@@ -1,168 +1,53 @@
-import React from 'react';
-import {
-  AppBar,
-  Toolbar,
-  Typography,
-  IconButton,
-  Box,
-  Button,
-  Menu,
-  MenuItem,
-  Avatar,
-  Divider,
-  ListItemIcon,
-  ListItemText,
-} from '@mui/material';
-import {
-  Brightness4,
-  Brightness7,
-  Link as LinkIcon,
-  Analytics,
-  AccountCircle,
-  Logout,
-  Person,
-} from '@mui/icons-material';
-import { useTheme } from '../contexts/ThemeContext';
-import { useAuth } from '../contexts/AuthContext';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
+import { Link, BarChart, Zap } from 'lucide-react';
 
-interface NavigationProps {
-  currentPage: 'shortener' | 'statistics';
-  onPageChange: (page: 'shortener' | 'statistics') => void;
-}
-
-export const Navigation: React.FC<NavigationProps> = ({ currentPage, onPageChange }) => {
-  const { isDarkMode, toggleTheme } = useTheme();
-  const { user, logout } = useAuth();
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
-
-  const handleMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleLogout = () => {
-    logout();
-    handleMenuClose();
-  };
+const Navigation = () => {
+  const location = useLocation();
 
   return (
-    <AppBar position="sticky" elevation={2}>
-      <Toolbar>
-        <LinkIcon sx={{ mr: 2 }} />
-        <Typography
-          variant="h6"
-          component="h1"
-          sx={{ flexGrow: 1, fontWeight: 600 }}
-        >
-          URL Shortener
-        </Typography>
-        
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button
-            color="inherit"
-            startIcon={<LinkIcon />}
-            onClick={() => onPageChange('shortener')}
-            sx={{
-              backgroundColor: currentPage === 'shortener' ? 'rgba(255,255,255,0.1)' : 'transparent',
-              '&:hover': {
-                backgroundColor: 'rgba(255,255,255,0.2)',
-              },
-            }}
-          >
-            Shortener
-          </Button>
-          
-          <Button
-            color="inherit"
-            startIcon={<Analytics />}
-            onClick={() => onPageChange('statistics')}
-            sx={{
-              backgroundColor: currentPage === 'statistics' ? 'rgba(255,255,255,0.1)' : 'transparent',
-              '&:hover': {
-                backgroundColor: 'rgba(255,255,255,0.2)',
-              },
-            }}
-          >
-            Statistics
-          </Button>
-          
-          <IconButton
-            color="inherit"
-            onClick={toggleTheme}
-            aria-label={`Switch to ${isDarkMode ? 'light' : 'dark'} mode`}
-            sx={{
-              transition: 'transform 0.2s ease-in-out',
-              '&:hover': {
-                transform: 'rotate(20deg)',
-              },
-            }}
-          >
-            {isDarkMode ? <Brightness7 /> : <Brightness4 />}
-          </IconButton>
+    <nav className="bg-card border-b border-border shadow-dark">
+      <div className="container mx-auto px-4">
+        <div className="flex items-center justify-between h-16">
+          {/* Logo */}
+          <div className="flex items-center space-x-3">
+            <div className="bg-gradient-primary p-2 rounded-lg golden-glow">
+              <Zap className="h-6 w-6 text-primary-foreground" />
+            </div>
+            <span className="text-xl font-bold bg-gradient-primary bg-clip-text text-transparent">
+              LinkGold
+            </span>
+          </div>
 
-          <IconButton
-            color="inherit"
-            onClick={handleMenuOpen}
-            aria-label="User menu"
-            sx={{ ml: 1 }}
-          >
-            <Avatar
-              sx={{
-                width: 32,
-                height: 32,
-                bgcolor: 'rgba(255,255,255,0.2)',
-                fontSize: '0.875rem',
-              }}
+          {/* Navigation Links */}
+          <div className="flex items-center space-x-6">
+            <RouterLink
+              to="/"
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                location.pathname === '/' 
+                  ? 'bg-primary text-primary-foreground shadow-golden' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`}
             >
-              {user?.name?.charAt(0).toUpperCase() || 'U'}
-            </Avatar>
-          </IconButton>
-
-          <Menu
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleMenuClose}
-            onClick={handleMenuClose}
-            PaperProps={{
-              elevation: 3,
-              sx: {
-                mt: 1.5,
-                minWidth: 200,
-                '& .MuiMenuItem-root': {
-                  px: 2,
-                  py: 1,
-                },
-              },
-            }}
-            transformOrigin={{ horizontal: 'right', vertical: 'top' }}
-            anchorOrigin={{ horizontal: 'right', vertical: 'bottom' }}
-          >
-            <MenuItem disabled>
-              <ListItemIcon>
-                <Person fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>
-                <Typography variant="subtitle2">{user?.name}</Typography>
-                <Typography variant="caption" color="text.secondary">
-                  {user?.email}
-                </Typography>
-              </ListItemText>
-            </MenuItem>
+              <Link className="h-4 w-4" />
+              <span className="font-medium">Shorten URL</span>
+            </RouterLink>
             
-            <Divider />
-            
-            <MenuItem onClick={handleLogout}>
-              <ListItemIcon>
-                <Logout fontSize="small" />
-              </ListItemIcon>
-              <ListItemText>Logout</ListItemText>
-            </MenuItem>
-          </Menu>
-        </Box>
-      </Toolbar>
-    </AppBar>
+            <RouterLink
+              to="/stats"
+              className={`flex items-center space-x-2 px-4 py-2 rounded-lg transition-all duration-300 ${
+                location.pathname === '/stats' 
+                  ? 'bg-primary text-primary-foreground shadow-golden' 
+                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+              }`}
+            >
+              <BarChart className="h-4 w-4" />
+              <span className="font-medium">Statistics</span>
+            </RouterLink>
+          </div>
+        </div>
+      </div>
+    </nav>
   );
 };
+
+export default Navigation;
